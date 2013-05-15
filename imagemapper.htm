@@ -1,31 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<title>{#template_dlg.title}</title>
-	<script type="text/javascript" src="../../tiny_mce_popup.js"></script>
-	<script type="text/javascript" src="js/template.js"></script>
-	<link href="css/template.css" rel="stylesheet" type="text/css" />
-</head>
-<body onresize="TemplateDialog.resize();"> 
-	<form onsubmit="TemplateDialog.insert();return false;">
-		<div id="frmbody">
-			<div class="title">{#template_dlg.desc}</div>
-			<div class="frmRow"><label for="tpath" title="{#template_dlg.select}">{#template_dlg.label}:</label>
-			<select id="tpath" name="tpath" onchange="TemplateDialog.selectTemplate(this.options[this.selectedIndex].value, this.options[this.selectedIndex].text);" class="mceFocus">
-				<option value="">{#template_dlg.select}...</option>
-			</select>
-			<span id="warning"></span></div>
-			<div class="frmRow"><label for="tdesc">{#template_dlg.desc_label}:</label>
-			<span id="tmpldesc"></span></div>
-			<fieldset>
-				<legend>{#template_dlg.preview}</legend>
-				<iframe id="templatesrc" name="templatesrc" src="blank.htm" width="690" height="400" frameborder="0"></iframe>
-			</fieldset>
-		</div>
-		
-		<div class="mceActionPanel">
-			<input type="submit" id="insert" name="insert" value="{#insert}" />
-			<input type="button" id="cancel" name="cancel" value="{#cancel}" onclick="tinyMCEPopup.close();" />
-		</div>
-	</form>
-</body> 
-</html> 
+    <head>
+        <title>{#imagemapper_dlg.title}</title>
+        <!--<script type="text/javascript" src="../../tiny_mce.js"></script>-->
+        <script type="text/javascript" src="../../tiny_mce_popup.js"></script>
+        <script type="text/javascript" src="js/imagemapper.js"></script>
+        <link href="css/imagemapper.css" rel="stylesheet" type="text/css"/>
+    </head>
+    <body>
+        <!--        <form id="msm_imagemapper_form" action="editorCreation/imagemapperForm.php" method="post">-->
+        <form id="msm_imagemapper_form">
+            <div class="msm_imagemapper_form_container">
+                <p>hello world</p>
+                <label for="msm_imagemapper_highlighted"> Selected Text: </label>
+                <input id="msm_imagemapper_highlighted" name="msm_imagemapper_highlighted" class="text" disabled="disabled"/>
+                <br/>
+                <br/>
+                <label for="msm_imagemapper_select"> Imagemapper Type : </label>
+                <select id="msm_imagemapper_select" name="msm_imagemapper_select" onchange="ImagemapperDialog.changeForm(event);">
+                    <option>Please choose a type.</option>
+                    <option value="Information">Information</option>
+                    <option value="External Link">External Link</option>
+                    <option value="Internal Reference">Internal Reference</option>
+                    <option value="External Reference">External Reference</option>
+                </select>   
+                <br/>
+
+                <div id="msm_imagemapper_content_form_container">                    
+                </div>
+            </div>
+
+            <!--<form onsubmit="//ImagemapperDialog.insert();return false;" action="#">-->
+
+            <!--	<p>Here is a imagemapper dialog.</p>
+                    <p>Selected text: <input id="someval" name="someval" type="text" class="text" /></p>
+                    <p>Custom arg: <input id="somearg" name="somearg" type="text" class="text" /></p>
+            
+                    <div class="mceActionPanel">
+                            <input type="button" id="insert" name="insert" value="{#insert}" onclick="ImagemapperDialog.insert();" />
+                            <input type="button" id="cancel" name="cancel" value="{#cancel}" onclick="tinyMCEPopup.close();" />
+                    </div>-->
+            <div class="msm_imagemapper_button_container">
+                <input type="submit" id="msm_imagemapper_submit" class="msm_imagemapper_button" value="Save"/>
+            </div>            
+        </form>
+    </body>
+</html>
