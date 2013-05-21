@@ -1,4 +1,4 @@
-function createDialog(ed, idNumber)
+function createImgDialog(ed, idNumber)
 {
     // to fix the dialog window size to 80% of window size
     var wWidth = $(window).width();
@@ -9,11 +9,13 @@ function createDialog(ed, idNumber)
                 
     $('#msm_imagemapper_container-'+idNumber).dialog({
         open: function(event, ui) {
-            $(".ui-dialog-titlebar-close").hide(); // disabling the close button
-//            $("#msm_imagemapper_highlighted-"+idNumber).val(ed.selection.getContent({
-//                format : 'text'
-//            }));
-//            initInfoEditor(idNumber);
+            $("#msm_image_div-"+idNumber).height(dHeight*0.30);  
+            $("#msm_image_accordiondiv-"+idNumber).accordion();
+//            $(".ui-dialog-titlebar-close").hide(); // disabling the close button
+////            $("#msm_imagemapper_highlighted-"+idNumber).val(ed.selection.getContent({
+////                format : 'text'
+////            }));
+////            initInfoEditor(idNumber);
         },
         modal:true,
         autoOpen: false,
@@ -23,110 +25,153 @@ function createDialog(ed, idNumber)
     });
     $('#msm_imagemapper_container-'+idNumber).dialog('open').css('display', 'block');
 }
-//
-////tinyMCEPopup.requireLangPack();
-//
-//var ImagemapperDialog = {
-//	preInit : function() {
-//		var url = tinyMCEPopup.getParam("imagemapper_external_list_url");
-//
-//		if (url != null)
-//			document.write('<sc'+'ript language="javascript" type="text/javascript" src="' + tinyMCEPopup.editor.documentBaseURI.toAbsolute(url) + '"></sc'+'ript>');
-//	},
-//
-//	init : function() {
-//		var ed = tinyMCEPopup.editor, tsrc, sel, x, u;
-//
-// 		tsrc = ed.getParam("imagemapper_imagemappers", false);
-// 		sel = document.getElementById('tpath');
-//
-//		// Setup external imagemapper list
-//		if (!tsrc && typeof(tinyMCEImagemapperList) != 'undefined') {
-//			for (x=0, tsrc = []; x<tinyMCEImagemapperList.length; x++)
-//				tsrc.push({title : tinyMCEImagemapperList[x][0], src : tinyMCEImagemapperList[x][1], description : tinyMCEImagemapperList[x][2]});
-//		}
-//
-//		for (x=0; x<tsrc.length; x++)
-//			sel.options[sel.options.length] = new Option(tsrc[x].title, tinyMCEPopup.editor.documentBaseURI.toAbsolute(tsrc[x].src));
-//
-//		this.resize();
-//		this.tsrc = tsrc;
-//	},
-//
-//	resize : function() {
-//		var w, h, e;
-//
-//		if (!self.innerWidth) {
-//			w = document.body.clientWidth - 50;
-//			h = document.body.clientHeight - 160;
-//		} else {
-//			w = self.innerWidth - 50;
-//			h = self.innerHeight - 170;
-//		}
-//
-//		e = document.getElementById('imagemappersrc');
-//
-//		if (e) {
-//			e.style.height = Math.abs(h) + 'px';
-//			e.style.width = Math.abs(w - 5) + 'px';
-//		}
-//	},
-//
-//	loadCSSFiles : function(d) {
-//		var ed = tinyMCEPopup.editor;
-//
-//		tinymce.each(ed.getParam("content_css", '').split(','), function(u) {
-//			d.write('<link href="' + ed.documentBaseURI.toAbsolute(u) + '" rel="stylesheet" type="text/css" />');
-//		});
-//	},
-//
-//	selectImagemapper : function(u, ti) {
-//		var d = window.frames['imagemappersrc'].document, x, tsrc = this.tsrc;
-//
-//		if (!u)
-//			return;
-//
-//		d.body.innerHTML = this.imagemapperHTML = this.getFileContents(u);
-//
-//		for (x=0; x<tsrc.length; x++) {
-//			if (tsrc[x].title == ti)
-//				document.getElementById('tmpldesc').innerHTML = tsrc[x].description || '';
-//		}
-//	},
-//
-// 	insert : function() {
-//		tinyMCEPopup.execCommand('mceInsertImagemapper', false, {
-//			content : this.imagemapperHTML,
-//			selection : tinyMCEPopup.editor.selection.getContent()
-//		});
-//
-//		tinyMCEPopup.close();
-//	},
-//
-//	getFileContents : function(u) {
-//		var x, d, t = 'text/plain';
-//
-//		function g(s) {
-//			x = 0;
-//
-//			try {
-//				x = new ActiveXObject(s);
-//			} catch (s) {
-//			}
-//
-//			return x;
-//		};
-//
-//		x = window.ActiveXObject ? g('Msxml2.XMLHTTP') || g('Microsoft.XMLHTTP') : new XMLHttpRequest();
-//
-//		// Synchronous AJAX load file
-//		x.overrideMimeType && x.overrideMimeType(t);
-//		x.open("GET", u, false);
-//		x.send(null);
-//
-//		return x.responseText;
-//	}
-//};
-//
-//ImagemapperDialog.preInit();
-//tinyMCEPopup.onInit.add(ImagemapperDialog.init, ImagemapperDialog);
+
+function findImgParentDiv(idEnding)
+{
+    //    console.log("findParentDiv idEnding: "+idEnding);
+    
+    var parent = null;
+    var matchInfo = null;
+    var typeId = null;
+    
+    var defPattern = /^\S*(defcontent\d+\S*)$/;
+    var defrefPattern = /^\S*(defrefcontent\d+\S*)$/;
+    var statementTheoremPattern = /^\S*(statementtheoremcontent\d+\S*)$/;
+    var statementTheoremRefPattern = /^\S*(theoremrefcontent\d+\S*)$/;
+    var partTheoremPattern = /^\S*(parttheoremcontent\d+\S*)$/;
+    var partTheoremRefPattern = /^\S*(theoremrefpart\d+\S*)$/;
+    var commentPattern = /^\S*(commentcontent\d+\S*)$/;
+    var commentrefPattern = /^\S*(commentrefcontent\d+\S*)$/;
+    var bodyPattern = /^\S*(bodycontent\d+\S*)$/;
+    var introPattern = /^\S*(introcontent\d+\S*)$/;
+    var introChildPattern = /^\S*(introchild\d+\S*)$/;
+    var extraInfoPattern = /^\S*(extracontent\d+\S*)$/;
+    var associatePattern = /^\S*(infocontent\d+\S*)$/;
+    
+    var defmatch = idEnding.match(defPattern);
+    var defrefmatch = idEnding.match(defrefPattern);
+    var statementmatch = idEnding.match(statementTheoremPattern);
+    var statementrefmatch = idEnding.match(statementTheoremRefPattern);
+    var partmatch = idEnding.match(partTheoremPattern);
+    var partrefmatch = idEnding.match(partTheoremRefPattern);
+    var commentmatch = idEnding.match(commentPattern);
+    var commentrefmatch = idEnding.match(commentrefPattern);
+    var bodymatch = idEnding.match(bodyPattern);
+    var intromatch = idEnding.match(introPattern);
+    var introchildmatch = idEnding.match(introChildPattern);
+    var extracontentmatch = idEnding.match(extraInfoPattern);
+    var associatematch = idEnding.match(associatePattern);
+    
+    // parent needs to be whatever div contains the object in 
+    // msm_subordinate_result_containers class (usually the 
+    // copied_msm_structural_elements class)
+    
+    if(defmatch)
+    {
+        matchInfo = defmatch[0].split("-");
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");
+        parent = document.getElementById("copied_msm_def-"+typeId);
+    }
+    if(defrefmatch)
+    {
+        matchInfo = defrefmatch[0].split("-");    
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");  
+        typeId += "-"+matchInfo[1]+"-"+matchInfo[2];
+        
+        parent = document.getElementById("copied_msm_defref-"+typeId);
+    }
+    else if(commentmatch)
+    {
+        matchInfo = commentmatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");       
+        parent = document.getElementById("copied_msm_comment-"+typeId);
+    }
+    else if(commentrefmatch)
+    {
+        matchInfo = commentrefmatch[0].split("-");    
+        typeId = matchInfo[0].replace(/([A-Za-z]*-?)(\d+)/, "$2");       
+        typeId += "-"+matchInfo[1]+"-"+matchInfo[2];
+        
+        parent = document.getElementById("copied_msm_commentref-"+typeId);
+    }
+    else if(bodymatch)
+    {
+        matchInfo = bodymatch[0].split("-");            
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
+        parent = document.getElementById("copied_msm_body-"+typeId);
+    }
+    else if(intromatch)
+    {
+        matchInfo = intromatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
+        parent = document.getElementById("copied_msm_intro-"+typeId);
+    }
+    else if(introchildmatch)
+    {        
+        matchInfo = introchildmatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
+        parent = document.getElementById("msm_intro_child_div-"+typeId);
+    }
+    else if(extracontentmatch)
+    {
+        matchInfo = extracontentmatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");        
+        parent = document.getElementById("copied_msm_extra_info-"+typeId);
+    }
+    else if(associatematch)
+    {
+        matchInfo = associatematch[0].split("-");    
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");       
+        typeId += "-"+matchInfo[1];
+        
+        parent = document.getElementById("msm_associate_childs-"+typeId);
+    }
+    else if (statementmatch)
+    {
+        matchInfo = statementmatch[0].split("-");        
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");     
+        
+        $(".copied_msm_structural_element").each(function() {
+            var currentIdInfo = this.id.split("-");
+            $(this).find(".msm_imagemapper_result_containers").each(function() {
+                var resultIdInfo = this.id.split("-");
+                
+                var resultIdEnding = resultIdInfo[1].replace(/(statementtheoremcontent)(\d+)/, "$2");
+                
+                if(typeId == resultIdInfo[2])
+                {    
+                    if(currentIdInfo[1] == resultIdEnding)
+                    {                            
+                        typeId = resultIdEnding;
+                    }
+                }
+            });
+        });        
+        
+        parent = document.getElementById("copied_msm_theorem-"+typeId);
+    }
+    else if(statementrefmatch)
+    {
+        matchInfo = statementrefmatch[0].split("-"); 
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");    
+        typeId += "-"+matchInfo[1]+"-"+matchInfo[2];
+        parent = document.getElementById("copied_msm_theoremref-"+typeId);
+    }
+    else if(partmatch)
+    {
+        matchInfo = partmatch[0].split("-");   
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");   
+        typeId += "-"+matchInfo[1];
+        parent = document.getElementById("msm_theorem_statement_container-"+typeId);
+    }
+    else if(partrefmatch)
+    {
+        matchInfo = partrefmatch[0].split("-");   
+        typeId = matchInfo[0].replace(/([A-Za-z]*?)(\d+)/, "$2");   
+        typeId += "-"+matchInfo[1]+"-"+matchInfo[2]+"-"+matchInfo[3];
+        
+        parent = document.getElementById("msm_theoremref_statement_container-"+typeId);
+    }
+    
+    return parent;
+}

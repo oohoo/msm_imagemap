@@ -48,7 +48,7 @@
                 {
                     indexNumber = "infocontent";
                 }
-                else if(type[1] == "imagemapper")
+                else if(type[1] == "subordinate")
                 {
                     var tempString = '';
                     for(var i=1; i < idNumber.length-1; i++)
@@ -86,7 +86,9 @@
             // Add a node change handler, when no content is selected, the button is disabled,
             // otherwise, the button is enabled.
             ed.onNodeChange.add(function(ed, cm, n) {
-                if(ed.selection.getContent())
+                var selected = ed.selection.getNode().tagName;                
+                
+                if(selected == "IMG")
                 {
                     cm.setDisabled('imagemapper', false);
                 }
@@ -94,7 +96,7 @@
                 {
                     cm.setActive('imagemapper', false);
                     cm.setDisabled('imagemapper', true);
-                }
+                }             
             });
             
             // Register imagemapper button
@@ -144,197 +146,102 @@
 function makeImagemapperDialog(ed, idNumber, isSub)
 {
     var container = null;
-    var dialogwhole = document.createElement('div');
-    var dialogForm = document.createElement('form');
-    var dialogFormContainer = document.createElement('div');
-    var selectedTextlabel = document.createElement('label');
-    var selectedTextValue = document.createTextNode('Selected Text : ');
-    var selectedTextInput = document.createElement('input');
     
-    var selectTypeLabel = document.createElement('label');
-    var selectTypeText = document.createTextNode('Imagemapper Type : ');
-    var selectTypeMenu = document.createElement('select');
-    
-    var selectTypeOption1 = document.createElement('option');
-    selectTypeOption1.value = "Information";
-    var selectTypeOption1Value = document.createTextNode('Information');
-    var selectTypeOption2 = document.createElement('option');
-    selectTypeOption2.setAttribute("value", "External Link");
-    var selectTypeOption2Value = document.createTextNode('External Link');
-    var selectTypeOption3 = document.createElement('option');
-    selectTypeOption3.setAttribute("value", "Internal Reference");
-    var selectTypeOption3Value = document.createTextNode('Internal Reference');
-    var selectTypeOption4 = document.createElement('option');
-    selectTypeOption4.setAttribute("value", "External Reference");
-    var selectTypeOption4Value = document.createTextNode('External Reference');
-    
-    var selectedNode = null;
+    var selected = null;
     
     if($.browser.msie)
     {
-        selectedNode = ed.selection.getNode().childNodes[0].tagName;
+        selected = ed.selection.getNode().childNodes[0];
     }
     else
     {
-        selectedNode = ed.selection.getNode().tagName;
+        selected = ed.selection.getNode();
+    }
+   
+    container = document.getElementById('msm_imagemapper_container-'+idNumber);
+    
+    if(container)
+    {
+        $('#msm_imagemapper_container-'+idNumber+" textarea").each(function() {
+            if(tinymce.getInstanceById($(this).attr("id")) != null)
+            {
+                tinymce.execCommand('mceFocus', false, $(this).attr("id"));
+                tinymce.execCommand('mceRemoveControl', false, $(this).attr("id"));
+            }
+        });
+        
+        $("#msm_imagemapper_container-"+idNumber).empty().remove();     
     }
     
-    selectTypeOption1.setAttribute("selected", "selected");
-    
-    selectTypeOption1.appendChild(selectTypeOption1Value);
-    selectTypeOption2.appendChild(selectTypeOption2Value);
-    selectTypeOption3.appendChild(selectTypeOption3Value);
-    selectTypeOption4.appendChild(selectTypeOption4Value);
-    
-    var dialogContentForm = document.createElement('div');
-    var dialogButtonContainer = document.createElement('div');
-    var saveButton = document.createElement('input');
-    var cancelButton = document.createElement('input');
-    
-    if(isSub != '')
-    {
-        if(selectedNode != 'A')
-        {
-            container = document.createElement("div");
-            idNumber = isExistingIndex(idNumber+"-1");
+    var  parent = findImgParentDiv(idNumber);
             
-            container.id = 'msm_imagemapper_container-'+idNumber;
-            container.className = 'msm_imagemapper_containers';
-             
-            var parentDiv = findParentDiv(isSub);
-            $(parentDiv).append(container);
+    container = $("<div id='msm_imagemapper_container-"+idNumber+"' class='msm_imagemapper_containers'></div>");
+            
+    $(container).attr("title", "Create Imagemapper");
+    
+    var imageMapForm = $("<form id='msm_imagemap_form'></form>");
+    
+    var imageDiv = $("<div id='msm_image_div-"+idNumber+"' class='msm_image_divs'></div>");
+    var imageInfoDivTitle = $("<h3> Current Image Information </h3>");
+    var imageInfoDiv = $("<div id='msm_image_infodiv-"+idNumber+"' class='msm_image_infodivs'></div>");
+    var imageAccordion = $("<div id='msm_image_accordiondiv-"+idNumber+"' class='msm_image_accordiondivs'></div>");
+    
+    var widthLabel = $("<label for='msm_image_width_input-"+idNumber+"'>Width: </label>");
+    var heightLabel = $("<label for='msm_image_height_input-"+idNumber+"'>Height: </label>");
+    var widthInput = $("<input id='msm_image_width_input-"+idNumber+"' name='msm_image_width_input-"+idNumber+"' disabled='disabled'>");
+    var heightInput = $("<input id='msm_image_height_input-"+idNumber+"' name='msm_image_height_input-"+idNumber+"' disabled='disabled'>");
+    
+    var imgWidth = $(selected).attr("width");
+    var imgHeight = $(selected).attr("height");
+    
+    var inlinecheckbox = $("<input type='checkbox' name='msm_image_inline"+idNumber+"' id='msm_image_inline"+idNumber+"' value='inline'>");
+    var inlinecheckboxlabel = $("<label for='msm_image_inline"+idNumber+"'> Inline</label>");
+    var alginLabel = $("<label for='msm_image_align_selection-"+idNumber+"'>Alignment: </label>");
+    var alignSelect = $("<select id='msm_image_align_selection-"+idNumber+"' name='msm_image_align_selection-"+idNumber+"' disabled='disabled'>\n\
+                            <option value='centre'>Centre</option>\n\
+                            <option value='top'>Top</option>\n\
+                            <option value='bottom'>Bottom</option>\n\
+                        </select>");
+    
+    $(widthInput).val(imgWidth);
+    $(heightInput).val(imgHeight);
+    
+    $(imageInfoDiv).append(widthLabel);
+    $(imageInfoDiv).append(widthInput);
+    $(imageInfoDiv).append("<br />");
+    $(imageInfoDiv).append(heightLabel);
+    $(imageInfoDiv).append(heightInput);
+    $(imageInfoDiv).append("<br />");
+    $(imageInfoDiv).append(inlinecheckbox);
+    $(imageInfoDiv).append(inlinecheckboxlabel);
+    $(imageInfoDiv).append("<br />");
+    $(imageInfoDiv).append(alginLabel);
+    $(imageInfoDiv).append(alignSelect);
+    
+    
+    $(selected).clone().appendTo(imageDiv);  
+    $(imageAccordion).append(imageInfoDivTitle);
+    $(imageAccordion).append(imageInfoDiv);
+    
+    $(imageMapForm).append(imageDiv);
+    $(imageMapForm).append(imageAccordion);
+    $(container).append(imageMapForm);
+     
+    $(parent).append(container); 
+    
+    $("#msm_image_inline"+idNumber).change(function() {
+        if(this.checked)
+        {
+            $("#msm_image_align_selection-"+idNumber).removeAttr("disabled");
         }
         else
         {
-            var wordId = '';            
-            if($.browser.msie)
-            {
-                wordId = ed.selection.getNode().childNodes[0].id;
-            }
-            else
-            {
-                wordId = ed.selection.getNode().id;
-            }
-            
-            var pattern = /([A-Za-z]*?)(\d+)((?:-\d+)*)/;
-            
-            var editorIdInfo = ed.editorId.split("-");   
-            
-            var idReplacement = replaceIdEnding(ed, editorIdInfo);            
-            
-            var wordIdInfo = wordId.split("-");           
-            var oldString = '';
-            for(var i = 1; i < wordIdInfo.length-2; i++)
-            {
-                oldString += wordIdInfo[i]+"-";
-            }  
-            oldString += wordIdInfo[wordIdInfo.length-2];
-            
-            idNumber = oldString.replace(pattern, "$1"+idReplacement+"$3");   
-            
-            container = document.getElementById('msm_imagemapper_container-'+idNumber);
+            $("#msm_image_align_selection-"+idNumber).attr("disabled", "disabled");
         }
-    }
-    else
-    {
-        container = document.getElementById('msm_imagemapper_container-'+idNumber);
-    }    
-            
-    dialogwhole.id = 'msm_imagemapper-'+idNumber;
-    container.setAttribute("title", "Create Imagemapper");
-        
-    dialogForm.id = 'msm_imagemapper_form-'+idNumber;
-        
-    dialogFormContainer.className = "msm_imagemapper_form_container";
-        
-    selectedTextlabel.setAttribute("for",'msm_imagemapper_highlighted-'+idNumber);
-    selectedTextlabel.appendChild(selectedTextValue);
-        
-    selectedTextInput.id = 'msm_imagemapper_highlighted-'+idNumber;
-    selectedTextInput.name = 'msm_imagemapper_highlighted-'+idNumber;
-    selectedTextInput.setAttribute("disabled", "disabled");
-        
-    selectTypeLabel.setAttribute("for", 'msm_imagemapper_select-'+idNumber);
-    selectTypeLabel.appendChild(selectTypeText);
-        
-    selectTypeMenu.id = 'msm_imagemapper_select-'+idNumber;
-    selectTypeMenu.name = 'msm_imagemapper_select-'+idNumber;
-    selectTypeMenu.onchange = function(event) {
-        changeForm(event, ed, idNumber);
-    };
-        
-    dialogContentForm.id = 'msm_imagemapper_content_form_container-'+idNumber;
-    dialogContentForm.className = "msm_imagemapper_content_form_containers";
-        
-    dialogButtonContainer.className = 'msm_imagemapper_button_container';
-        
-    saveButton.setAttribute("type", "button");
-    saveButton.id = 'msm_imagemapper_submit-'+idNumber;
-    saveButton.className = 'msm_imagemapper_button';
-    saveButton.setAttribute("value", "Save");
-    saveButton.onclick = function() {
-        submitSubForm(ed, idNumber, isSub);
-    };
-        
-    cancelButton.setAttribute("type", "button");
-    cancelButton.id = 'msm_imagemapper_cancel-'+idNumber;
-    cancelButton.className = 'msm_imagemapper_button';
-    cancelButton.setAttribute("value", "Cancel");
-    cancelButton.onclick = function() {
-        closeSubFormDialog(idNumber);
-    };
-    
-    var infoForm = makeInfoForm(ed, idNumber);
-    dialogContentForm.appendChild(infoForm);
-    
-    selectTypeMenu.appendChild(selectTypeOption1);
-    selectTypeMenu.appendChild(selectTypeOption2);
-    selectTypeMenu.appendChild(selectTypeOption3);
-    selectTypeMenu.appendChild(selectTypeOption4);
-        
-    dialogButtonContainer.appendChild(saveButton);
-    dialogButtonContainer.appendChild(cancelButton);
-        
-    dialogFormContainer.appendChild(selectedTextlabel);
-    dialogFormContainer.appendChild(selectedTextInput);
-    dialogFormContainer.appendChild(document.createElement('br'));
-    dialogFormContainer.appendChild(document.createElement('br'));
-    dialogFormContainer.appendChild(selectTypeLabel);
-    dialogFormContainer.appendChild(selectTypeMenu);
-    dialogFormContainer.appendChild(dialogContentForm);
-        
-    dialogForm.appendChild(dialogFormContainer);
-    dialogForm.appendChild(document.createElement('br'));
-    dialogForm.appendChild(document.createElement('br'));
-    dialogForm.appendChild(dialogButtonContainer);
-        
-    dialogwhole.appendChild(dialogForm);
-      
-    // only append the new dialog form to div when it hasn't already been done
-//    if(!container.hasChildNodes())
-//    {
-//        container.appendChild(dialogwhole);    
-//    }
-//    else
-//    {
-//        $('#msm_imagemapper_container-'+idNumber+" textarea").each(function() {
-//            if(tinymce.getInstanceById($(this).attr("id")) != null)
-//            {
-//                tinymce.execCommand('mceFocus', false, $(this).attr("id"));
-//                tinymce.execCommand('mceRemoveControl', false, $(this).attr("id"));
-//            }
-//        });
-//        $('#msm_imagemapper_container-'+idNumber).empty();
-//        container.appendChild(dialogwhole);
-//    }
-//    
-//    if(selectedNode == "A")
-//    {
-//        changeSelectIndex(ed, idNumber);
-//        loadPreviousData(ed, idNumber);
-//    }
-    
-    createDialog(ed, idNumber);
+    });
+
+    createImgDialog(ed, idNumber);
+
     
 }
 
