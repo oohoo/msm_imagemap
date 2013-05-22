@@ -182,46 +182,11 @@ function makeImagemapperDialog(ed, idNumber, isSub)
     var imageMapForm = $("<form id='msm_imagemap_form'></form>");
     
     var imageDiv = $("<div id='msm_image_div-"+idNumber+"' class='msm_image_divs'></div>");
-    var imageInfoDivTitle = $("<h3> Current Image Information </h3>");
-    var imageInfoDiv = $("<div id='msm_image_infodiv-"+idNumber+"' class='msm_image_infodivs'></div>");
+    
     var imageAccordion = $("<div id='msm_image_accordiondiv-"+idNumber+"' class='msm_image_accordiondivs'></div>");
     
-    var widthLabel = $("<label for='msm_image_width_input-"+idNumber+"'>Width: </label>");
-    var heightLabel = $("<label for='msm_image_height_input-"+idNumber+"'>Height: </label>");
-    var widthInput = $("<input id='msm_image_width_input-"+idNumber+"' name='msm_image_width_input-"+idNumber+"' disabled='disabled'>");
-    var heightInput = $("<input id='msm_image_height_input-"+idNumber+"' name='msm_image_height_input-"+idNumber+"' disabled='disabled'>");
-    
-    var imgWidth = $(selected).attr("width");
-    var imgHeight = $(selected).attr("height");
-    
-    var inlinecheckbox = $("<input type='checkbox' name='msm_image_inline"+idNumber+"' id='msm_image_inline"+idNumber+"' value='inline'>");
-    var inlinecheckboxlabel = $("<label for='msm_image_inline"+idNumber+"'> Inline</label>");
-    var alginLabel = $("<label for='msm_image_align_selection-"+idNumber+"'>Alignment: </label>");
-    var alignSelect = $("<select id='msm_image_align_selection-"+idNumber+"' name='msm_image_align_selection-"+idNumber+"' disabled='disabled'>\n\
-                            <option value='centre'>Centre</option>\n\
-                            <option value='top'>Top</option>\n\
-                            <option value='bottom'>Bottom</option>\n\
-                        </select>");
-    
-    $(widthInput).val(imgWidth);
-    $(heightInput).val(imgHeight);
-    
-    $(imageInfoDiv).append(widthLabel);
-    $(imageInfoDiv).append(widthInput);
-    $(imageInfoDiv).append("<br />");
-    $(imageInfoDiv).append(heightLabel);
-    $(imageInfoDiv).append(heightInput);
-    $(imageInfoDiv).append("<br />");
-    $(imageInfoDiv).append(inlinecheckbox);
-    $(imageInfoDiv).append(inlinecheckboxlabel);
-    $(imageInfoDiv).append("<br />");
-    $(imageInfoDiv).append(alginLabel);
-    $(imageInfoDiv).append(alignSelect);
-    
-    
     $(selected).clone().appendTo(imageDiv);  
-    $(imageAccordion).append(imageInfoDivTitle);
-    $(imageAccordion).append(imageInfoDiv);
+   
     
     $(imageMapForm).append(imageDiv);
     $(imageMapForm).append(imageAccordion);
@@ -239,6 +204,8 @@ function makeImagemapperDialog(ed, idNumber, isSub)
             $("#msm_image_align_selection-"+idNumber).attr("disabled", "disabled");
         }
     });
+    
+    makeAccordion(selected, idNumber);
 
     createImgDialog(ed, idNumber);
 
