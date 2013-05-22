@@ -206,6 +206,7 @@ function makeImagemapperDialog(ed, idNumber, isSub)
     });
     
     makeAccordion(selected, idNumber);
+    addImgButton(idNumber);
 
     createImgDialog(ed, idNumber);
 
